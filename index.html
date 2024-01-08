@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+<head>
+    <title>Lista de Tarefas</title>
+    <style>
+        .selecionado{
+            background-color: yellow;
+        }
+    </style>
+    <script src="../angular-1.8.0/angular.js" ></script>
+    <script>
+        angular.module("listaTelefonica", []);
+        angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
+            $scope.app = "osvanio"
+            $scope.contatos = [
+                {nome: 'luiz', telefone: '123'},
+                {nome: 'pedro', telefone: '456'},
+                {nome: 'heverton', telefone: '789'}
+            ]
+            $scope.operadoras = [
+                {nome: "Oi", codigo: 1},
+                {nome: "Tim", codigo: 2},
+                {nome: "Vivo", codigo: 3}
+            ]
+            $scope.adicionarContato = function (contato){
+                $scope.contatos.push(angular.copy($scope.contato));
+                $scope.contato = {}; 
+            }
+
+            $scope.removerContato = function (contato) {
+                let indiceContato = $scope.contatos.indexOf(contato)
+
+                if (indiceContato !== -1){
+                    $scope.contatos.splice(indiceContato, 1)
+                }
+            }
+            $scope.removerContatos = function (contatos) {
+              $scope.contatos =  contatos.filter(function (contato) {
+                    if(!contato.selecionado){
+                        return contato;
+                    }
+                })
+            }
+            $scope.hasContatoSelecionado = function (contatos){
+               var hasContatoSelecionado = contatos.some(function(contato){
+                    return contato.selecionado;
+                })
+                console.log(hasContatoSelecionado)
+            }
+
+            $scope.classe = "selecionado"
+        });     
+    </script>
+</head>
+<body ng-controller="listaTelefonicaCtrl">
+    <div>
+        <h3></h3>
+        <table>
+            <tr>
+                <th>
+                    <td><input type="checkbox" 
+                               ng-model="contato.selecionado"
+                               >
+                    </td>
+                </th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Operadora</th>
+                <th>Ação</th>
+            </tr>
+            <tr  ng-class="{selecionado: contato.selecionado}"
+                 ng-repeat="contato in contatos"
+            >   
+                <td><input type="checkbox" ng-model="contato.selecionado"></td>
+                <td>{{contato.nome}}</td>
+                <td>{{contato.telefone}}</td>
+                <td>{{contato.operadora.nome}}</td>
+                <td>
+                <button ng-click="removerContato(contato)"
+                        ng-disabled="contatos.length == 1"
+                        ng-show="contato.selecionado">
+                Remover Contato
+                </button>
+                </td>
+            </tr>
+        </table>
+        <hr/>
+        <input type="text" ng-model="contato.nome">
+        <input type="text" ng-model="contato.telefone">
+        <button ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
+        <button ng-click="removerContatos(contatos)" ng-disabled="hasContatoSelecionado(contatos)" >Remover Contatos</button>
+        <hr>
+        <select ng-model="contato.operadora" ng-options="operadora.nome for operadora in operadoras">
+            <option value="">Seleciona uma operadora</option>
+        </select>
+    </div>
+</body>
+</html>
